@@ -25,7 +25,7 @@ interface FormData {
     insurance: "yes" | "no" | undefined;
     needs: number;
     wants: number;
-    hasEmergencyFund: string
+    hasEmergencyFund: string;
   };
   step4: { retirementAge: number };
 }
@@ -102,7 +102,7 @@ export default function Tab1Content({ formData }: Tab1ContentProps) {
               </h3>
               <p className="font-bold text-2xl">{goals}</p>
               <div className="w-full flex justify-center mt-3 mb-5">
-              <LinkCarousel items={links} />
+                <LinkCarousel items={links} />
               </div>
             </div>
           </div>
@@ -111,7 +111,11 @@ export default function Tab1Content({ formData }: Tab1ContentProps) {
         <FeedbackCard feedback={getSavingsFeedback(savingsRateNum)} />
         <hr className="stick my-4 border-gray-300" />
         <FeedbackCard
-          feedback={getEmergencyFundFeedback(step3.emergencyFund, step3.income, step3.hasEmergencyFund)}
+          feedback={getEmergencyFundFeedback(
+            step3.emergencyFund,
+            step3.income,
+            step3.hasEmergencyFund
+          )}
         />
       </div>
       <div>
