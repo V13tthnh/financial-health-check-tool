@@ -12,6 +12,7 @@ import RealEstateAdvice from "./RealEstateAdvice";
 import ShareButtons from "../Common/ShareButtons";
 import DownloadButton from "../Common/DownloadButton";
 import Logo from "../Common/Logo";
+import Image from "next/image";
 
 interface FormData {
   step1: { age: number };
@@ -98,9 +99,9 @@ export default function Tab2Content({
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
         {/* Cột trái */}
-        <div>
+        <div className="content-column">
           <FinancialSummary
             yearsToRetirement={yearsToRetirement}
             fiNumber={fiNumber}
@@ -112,7 +113,7 @@ export default function Tab2Content({
           <div className="flex justify-center">
             <LinkCarousel items={links} />
           </div>
-          <hr className="stick my-4 border-gray-300" />
+          <hr className="stick my-4 " />
           <h3 className="font-bold text-lg mb-3">
             Ví dụ với từng kênh đầu tư đem lại lợi nhuận hàng năm khác nhau:
           </h3>
@@ -121,7 +122,7 @@ export default function Tab2Content({
             formatCurrency={formatVietnameseCurrency}
           />
           <div className="ml-5">
-            <small className="text-gray-700">
+            <small className="text-black">
               * Bạn cần tham khảo các kênh đầu tư trên thị trường, tỷ lệ sinh
               lời trên chỉ có tính chất tham khảo <br />
               ** Nếu bạn không có đủ thu nhập để góp mỗi tháng, bạn có thể quay
@@ -129,38 +130,63 @@ export default function Tab2Content({
             </small>
           </div>
         </div>
-
+        <div
+          className="vertical-stick absolute inset-y-0 left-1/2 w-px bg-gray-300 hidden md:block"
+          style={{
+            transform: "translateX(-50%)",
+            height: "85%",
+          }}
+        ></div>
         {/* Cột phải */}
-        <div>
-          <RealEstateAdvice
-            futureValue={futureValueOfRealEstate}
-            formatCurrency={formatVietnameseCurrency}
-          />
-          <p className="text-gray-800 font-semibold text-lg mb-3">
-            Hãy cùng Money With Mina thiết kế hành trình quản lý tài chính và
-            cùng thực chiến cùng bạn
-          </p>
-          <div className="flex justify-center">
-            <div
-              className="bg-pink-100 p-2 rounded-md inline-block mb-2 link-feedback-card"
-              style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
-            >
-              <a
-                className="font-bold text-lg"
-                href="https://moneywithmina.com/khoa-hoc/"
+        <div className="content-column">
+          <div className="mb-10">
+            <RealEstateAdvice
+              futureValue={futureValueOfRealEstate}
+              formatCurrency={formatVietnameseCurrency}
+            />
+            <p className="text-black font-semibold text-lg mb-3">
+              Hãy cùng Money With Mina thiết kế hành trình quản lý tài chính và
+              cùng thực chiến cùng bạn
+            </p>
+            <div className="flex justify-center">
+              <div
+                className="bg-pink-100 p-2 rounded-md inline-block mb-2 link-feedback-card"
+                style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
               >
-                KHOÁ HỌC 100 NGÀY
-              </a>
+                <a
+                  className="font-bold text-lg"
+                  href="https://moneywithmina.com/khoa-hoc/"
+                >
+                  KHOÁ HỌC 100 NGÀY
+                </a>
+              </div>
             </div>
+            <hr className="stick my-4" />
+            <ShareButtons shareUrl={shareUrl} shareText={shareText} />
+            <DownloadButton
+              fileName="Tab2Content"
+              targetIds={["tab1-content", "tab2-content"]}
+              format="image"
+            />
+            <Logo />
           </div>
-          <hr className="stick my-4 border-gray-300" />
-          <ShareButtons shareUrl={shareUrl} shareText={shareText} />
-          <DownloadButton
-            fileName="Tab2Content"
-            targetIds={["tab1-content", "tab2-content"]}
-            format="image"
-          />
-          <Logo />
+        </div>
+
+        {/* Wrapper cho hình ảnh với overflow hidden */}
+        <div className="result-image-container">
+          <div className="result-image-wrapper">
+            <Image
+              src="/images/hinh-ket-qua-2.png"
+              alt="Hình kết quả 2"
+              fill
+              style={{
+                objectFit: "contain",
+                objectPosition: "bottom right",
+              }}
+              priority={true}
+              unoptimized={true}
+            />
+          </div>
         </div>
       </div>
     </>

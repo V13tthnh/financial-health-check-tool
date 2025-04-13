@@ -12,7 +12,7 @@ export default function LinkCarousel({ items }: CarouselProps) {
   };
 
   return (
-    <div className="w-full flex justify-center mt-3 mb-5">
+    <div className="w-full flex justify-center mt-3 ">
       <div className="w-full max-w-md">
         {/* Container for current item */}
         <div className="overflow-hidden">
@@ -26,9 +26,7 @@ export default function LinkCarousel({ items }: CarouselProps) {
               <div key={index} className="min-w-full flex justify-center">
                 <div
                   className="financial-goals-feedback-button rounded-lg px-1 py-1 text-center w-full mr-3 ml-3"
-                  style={{
-                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                  }}
+                  style={{ boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
                 >
                   <a
                     href={item.url}

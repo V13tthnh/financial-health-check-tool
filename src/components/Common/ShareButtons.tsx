@@ -1,6 +1,4 @@
-import { FaFacebook, FaFacebookMessenger } from "react-icons/fa";
 import Image from "next/image";
-import zaloLogo from "@/public/images/zalo-logo.png";
 import { useEffect } from "react";
 
 interface ShareButtonsProps {
@@ -66,36 +64,55 @@ export default function ShareButtons({
 
   return (
     <div className="text-center mb-5">
-      <p className="text-lg font-bold text-gray-600 mb-2">Chia sẻ ngay</p>
+      <p className="text-lg font-bold text-black mb-2">Chia sẻ ngay</p>
       <div className="flex gap-4 justify-center">
         <button
           onClick={handleFacebookShare}
-          className="w-12 h-12 bg-pink-200 rounded-full flex items-center justify-center hover:bg-pink-300 transition"
+          className="w-12 h-12 bg-pink-200 rounded-full flex items-center justify-center hover:bg-pink-300 transition relative overflow-hidden"
           aria-label="Chia sẻ lên Facebook"
         >
-          <FaFacebook size={32} />
+          <Image
+            src="/images/icon-facebook.png"
+            alt="Facebook Logo"
+            fill
+            sizes="48px"
+            style={{ objectFit: "cover" }}
+            loading="lazy"
+            unoptimized={true}
+            crossOrigin="anonymous"
+          />
         </button>
         <button
           onClick={handleZaloShare}
-          className="w-12 h-12 bg-pink-200 rounded-full flex items-center justify-center hover:bg-pink-300 transition"
+          className="w-12 h-12 bg-pink-200 rounded-full flex items-center justify-center hover:bg-pink-300 transition relative overflow-hidden"
           aria-label="Chia sẻ qua Zalo"
         >
           <Image
-            src={zaloLogo}
+            src="/images/icon-zalo.png"
             alt="Zalo Logo"
-            width={32}
-            height={32}
-            objectFit="contain"
-            priority={true}
+            fill
+            sizes="48px"
+            style={{ objectFit: "cover" }}
+            loading="lazy"
+            unoptimized={true}
             crossOrigin="anonymous"
           />
         </button>
         <button
           onClick={handleMessengerShare}
-          className="w-12 h-12 bg-pink-200 rounded-full flex items-center justify-center hover:bg-pink-300 transition"
+          className="w-12 h-12 bg-pink-200 rounded-full flex items-center justify-center hover:bg-pink-300 transition relative overflow-hidden"
           aria-label="Chia sẻ qua Messenger"
         >
-          <FaFacebookMessenger size={32} />
+          <Image
+            src="/images/icon-messenger.png"
+            alt="Messenger Logo"
+            fill
+            sizes="48px"
+            style={{ objectFit: "cover" }}
+            loading="lazy"
+            crossOrigin="anonymous"
+            unoptimized={true}
+          />
         </button>
       </div>
     </div>

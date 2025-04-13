@@ -148,7 +148,7 @@ export default function Home() {
         return (
           <>
             <CurrentFinancialSituation />
-            <div className="mt-6 flex justify-center">
+            <div className="result-background flex justify-center">
               <button
                 onClick={handleReset}
                 className="px-6 py-2 bg-gray-200 text-gray-800 hover:bg-gray-300 transition font-semibold"

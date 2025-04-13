@@ -4,7 +4,6 @@ import { PROVINCES, JOB_GROUPS } from "../../lib/Constants";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import ErrorModal from "../ErrorModal/ErrorModal";
-import conversationIllustration from "@/public/images/conversation-illustration.png";
 
 export default function Step1Form() {
   const { formData, setFormData, setCurrentStep } = useFormContext();
@@ -114,10 +113,10 @@ export default function Step1Form() {
   return (
     <>
       <div className="min-h-screen bg-custom-peach flex items-center justify-center p-4">
-        <div className="bg-white shadow-lg max-w-md w-full p-6 flex flex-col items-center">
+        <div className="bg-white shadow-lg max-w-lg w-full p-6 flex flex-col items-center">
           <h2 className="text-2xl text-center mb-6">Bước 1</h2>
           <form onSubmit={handleSubmit}>
-            <div className="text-center text-gray-800 mb-6">
+            <div className="text-center text-black mb-6">
               <p className="text-lg font-bold">
                 Xin chào! Tên tôi là{" "}
                 <input
@@ -172,7 +171,8 @@ export default function Step1Form() {
                     </option>
                   ))}
                 </select>
-                . Công việc hiện tại là{" "}
+                . <br/>
+                Công việc hiện tại là{" "}
                 <select
                   value={step1.jobGroup || ""}
                   onChange={(e) => {
@@ -223,7 +223,7 @@ export default function Step1Form() {
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="px-6 py-2 bg-pink-200 text-gray-800 hover:bg-pink-300 transition font-semibold flex items-center"
+                className="px-6 py-2 bg-pink-200 text-black hover:bg-pink-300 transition font-semibold flex items-center"
               >
                 Tiếp theo
                 <FaArrowRight className="w-4 h-4 ml-2" />
@@ -233,10 +233,11 @@ export default function Step1Form() {
           {/* Ảnh dưới của step 1 */}
           <div className="mb-6 mt-2">
             <Image
-              src={conversationIllustration}
+              src="/images/icon-step1.png"
               alt="Conversation Illustration"
               width={300}
               height={300}
+              loading="lazy"
               className="mx-auto"
             />
           </div>
