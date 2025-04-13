@@ -151,7 +151,7 @@ export default function Home() {
             <div className="result-background flex justify-center">
               <button
                 onClick={handleReset}
-                className="px-6 py-2 bg-gray-200 text-gray-800 hover:bg-gray-300 transition font-semibold"
+                className="px-6 mb-5 py-2 bg-gray-200 text-black hover:bg-gray-300 transition font-semibold"
               >
                 Bắt đầu lại
               </button>

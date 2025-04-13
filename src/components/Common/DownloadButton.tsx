@@ -96,16 +96,31 @@ export default function DownloadButton({
       });
 
       // Tải xuống các ảnh hợp lệ
+      // blobs.forEach((blob: Blob | null, index: number) => {
+      //   if (blob) {
+      //     const link = document.createElement("a");
+      //     const url = URL.createObjectURL(blob);
+      //     link.href = url;
+      //     link.download = `${fileName}_part${index + 1}.png`;
+      //     document.body.appendChild(link);
+      //     link.click();
+      //     document.body.removeChild(link);
+      //     URL.revokeObjectURL(url);
+      //   }
+      // });
+
       blobs.forEach((blob: Blob | null, index: number) => {
         if (blob) {
-          const link = document.createElement("a");
-          const url = URL.createObjectURL(blob);
-          link.href = url;
-          link.download = `${fileName}_part${index + 1}.png`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
+          const reader = new FileReader();
+          reader.onload = () => {
+            const link = document.createElement("a");
+            link.href = reader.result as string;
+            link.download = `${fileName}_part${index + 1}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          };
+          reader.readAsDataURL(blob);
         }
       });
 

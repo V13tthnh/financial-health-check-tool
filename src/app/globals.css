@@ -26,8 +26,8 @@
 
 body {
   background-image: url("/images/background.png");
-  background-size: 100% 100%;
-  background-position: center;
+  background-size: cover;
+  background-position: bottom;
   background-repeat: no-repeat;
   background-attachment: fixed;
   min-height: 100vh;
