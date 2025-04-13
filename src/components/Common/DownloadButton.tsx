@@ -67,7 +67,7 @@ export default function DownloadButton({
         try {
           const dataUrl = await domtoimage.toPng(element, {
             bgcolor: "#ffffff",
-            useCORS: true,
+            //useCORS: true,
             cacheBust: true, // Tránh cache ảnh
           });
   
@@ -127,7 +127,6 @@ export default function DownloadButton({
       >
         <button
           onClick={handleDownload}
-          onTouchStart={handleDownload} 
           className={`font-bold text-lg flex items-center rounded-md transition ${
             isDownloading
               ? "opacity-50 cursor-not-allowed"
