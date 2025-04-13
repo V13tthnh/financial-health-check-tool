@@ -6,9 +6,11 @@ interface Feedback {
   message: string;
   type?: "savings" | "emergencyFund" | "debt" | "insurance" | "budget";
   iconType?: "veryGood" | "good" | "ok" | "notGood";
-  link?:
-    | { url: string; text: string }
-    | { links: { url: string; text: string }[] };
+  link?: {
+    links?: Array<{ url: string; text: string }>;
+    url?: string;
+    text?: string;
+  };
   bgColor: string;
 }
 
@@ -130,7 +132,7 @@ export default function FeedbackCard({ feedback }: FeedbackCardProps) {
           />
           {feedback.link && (
             <div className="w-full mt-3">
-              {"links" in feedback.link ? (
+              {feedback.link.links && feedback.link.links.length > 0 ? (
                 <LinkCarousel items={feedback.link.links} />
               ) : (
                 // Link đơn

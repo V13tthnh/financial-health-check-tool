@@ -12,7 +12,11 @@ interface Feedback {
   message: string;
   type?: "savings" | "emergencyFund" | "debt" | "insurance" | "budget";
   iconType?: "veryGood" | "good" | "ok" | "notGood";
-  link?: { url: string; text: string };
+  link?: {
+    links?: { url: string; text: string }[];
+    url?: string;
+    text?: string;
+  };
   bgColor: string;
 }
 
@@ -58,7 +62,7 @@ export function getSavingsFeedback(rate: number): Feedback {
       iconType: "veryGood",
     };
   if (rate >= 20)
-    return {  
+    return {
       status: "Tốt",
       message:
         "Bạn đang tiết kiệm khá tốt. Chỉ cần kiên trì với kỷ luật thép, bạn sẽ tiến gần hơn với mục tiêu Độc lập tài chính của mình.",
@@ -112,7 +116,7 @@ export function getEmergencyFundFeedback(
       type: "emergencyFund",
       iconType: "good",
     };
-  if (fund < threeMonths && hasEmergencyFund === "yes")
+  if (fund < threeMonths && hasEmergencyFund == "yes")
     return {
       status: "Tạm ổn",
       message:
@@ -185,7 +189,7 @@ export function getInsuranceFeedback(
   return {
     status: "Chưa tốt",
     message: `Bạn chưa mua bảo hiểm, việc này có thể ảnh hưởng đến mục tiêu Tự Do Tài Chính của bạn. Vì nếu có vấn đề xảy ra với sức khoẻ của bạn và gia đình, có thể bạn cần phải bán tài sản hoặc cắt lỗ đầu tư để lo phần tài chính. Cho những ai cần phải nghĩ đến bảo hiểm sức khoẻ.`,
-    bgColor: "#fa9496", 
+    bgColor: "#fa9496",
     type: "insurance",
     iconType: "notGood",
     link,
