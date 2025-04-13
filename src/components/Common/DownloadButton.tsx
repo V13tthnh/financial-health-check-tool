@@ -17,7 +17,7 @@ export default function DownloadButton({
   const handleDownload = async () => {
     if (isDownloading) return;
     setIsDownloading(true);
-
+  
     try {
       const originalStyles: Record<
         string,
@@ -30,7 +30,7 @@ export default function DownloadButton({
           zIndex: string;
         }
       > = {};
-
+  
       // Lưu trữ style ban đầu và đảm bảo hiển thị
       targetIds.forEach((targetId) => {
         const element = document.getElementById(targetId);
@@ -52,7 +52,7 @@ export default function DownloadButton({
           element.style.zIndex = "1";
         }
       });
-
+  
       // Chụp ảnh song song
       const imagePromises = targetIds.map(async (targetId) => {
         const element = document.getElementById(targetId);
@@ -60,28 +60,29 @@ export default function DownloadButton({
           console.error(`Element with ID "${targetId}" not found.`);
           return null;
         }
-
+  
         // Đợi DOM render hoàn tất
         await new Promise((resolve) => setTimeout(resolve, 100));
-
+  
         try {
-          const blob = await domtoimage.toBlob(element, {
+          const dataUrl = await domtoimage.toPng(element, {
             bgcolor: "#ffffff",
             useCORS: true,
             cacheBust: true, // Tránh cache ảnh
           });
-          return blob;
+  
+          return dataUrl;
         } catch (error) {
           console.error(
-            `Failed to create Blob for element "${targetId}":`,
+            `Failed to create image for element "${targetId}":`,
             error
           );
           return null;
         }
       });
-
-      const blobs = await Promise.all(imagePromises);
-
+  
+      const dataUrls = await Promise.all(imagePromises);
+  
       // Khôi phục style ngay lập tức
       targetIds.forEach((targetId) => {
         const element = document.getElementById(targetId);
@@ -94,37 +95,20 @@ export default function DownloadButton({
           element.style.zIndex = originalStyles[targetId].zIndex;
         }
       });
-
+  
       // Tải xuống các ảnh hợp lệ
-      // blobs.forEach((blob: Blob | null, index: number) => {
-      //   if (blob) {
-      //     const link = document.createElement("a");
-      //     const url = URL.createObjectURL(blob);
-      //     link.href = url;
-      //     link.download = `${fileName}_part${index + 1}.png`;
-      //     document.body.appendChild(link);
-      //     link.click();
-      //     document.body.removeChild(link);
-      //     URL.revokeObjectURL(url);
-      //   }
-      // });
-
-      blobs.forEach((blob: Blob | null, index: number) => {
-        if (blob) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            const link = document.createElement("a");
-            link.href = reader.result as string;
-            link.download = `${fileName}_part${index + 1}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          };
-          reader.readAsDataURL(blob);
+      dataUrls.forEach((dataUrl: string | null, index: number) => {
+        if (dataUrl) {
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = `${fileName}_part${index + 1}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
         }
       });
-
-      if (blobs.some((blob: Blob | null) => !blob)) {
+  
+      if (dataUrls.some((dataUrl: string | null) => !dataUrl)) {
         alert("Có lỗi xảy ra khi tạo một số ảnh. Vui lòng thử lại.");
       }
     } catch (error) {
