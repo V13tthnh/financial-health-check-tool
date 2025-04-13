@@ -44,7 +44,7 @@ export default function Step2Form() {
     <>
       {" "}
       <div className="flex justify-center items-center min-h-screen ">
-        <div className="w-full max-w-2xl mx-auto p-6 bg-white shadow-md">
+        <div className="w-full max-w-xl mx-auto p-6 bg-white shadow-md">
           <h2 className="text-2xl text-center mb-6">
             Bước 2: <br />
             <span className="font-bold">Mục tiêu tài chính</span>
@@ -75,13 +75,13 @@ export default function Step2Form() {
                       <button
                         type="button"
                         onClick={handleBack}
-                        className="px-6 py-2 bg-gray-200 text-gray-800 hover:bg-gray-300 transition font-semibold flex items-center"
+                        className="px-6 py-2 bg-gray-200 text-black hover:bg-gray-300 transition font-semibold flex items-center"
                       >
                         <FaArrowLeft className="w-4 h-4 mr-2" />
                       </button>
                       <button
                         type="submit"
-                        className="px-6 py-2 bg-pink-200 text-gray-800 hover:bg-pink-300 transition font-semibold flex items-center"
+                        className="px-6 py-2 bg-pink-200 text-black hover:bg-pink-300 transition font-semibold flex items-center"
                       >
                         <FaArrowRight className="w-4 h-4 ml-2" />
                       </button>

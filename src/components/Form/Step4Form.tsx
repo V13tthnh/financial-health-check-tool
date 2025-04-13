@@ -3,7 +3,6 @@ import { useFormContext } from "../../lib/context/FormContext";
 import { MARITAL_STATUS } from "@/lib/Constants";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import ErrorModal from "../ErrorModal/ErrorModal";
-import financialIndependence from "@/public/images/financial-independence.png";
 import Image from "next/image";
 
 export default function Step4Form() {
@@ -64,11 +63,11 @@ export default function Step4Form() {
   return (
     <>
       <div className="flex justify-center items-center min-h-screen">
-        <div className="max-w-2xl mx-auto px-15 bg-white rounded-lg shadow-md">
+        <div className="w-full max-w-xl mx-auto px-25 py-6 bg-white shadow-md">
           <h2 className="text-2xl text-center mb-6">Bước 4:</h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <p className="text-2xl font-bold text-gray-700">
+            <p className="text-2xl font-bold text-black">
               Bí mật cuối cùng, tôi hiện nay{" "}
               <select
                 value={step4.maritalStatus || ""}
@@ -115,7 +114,7 @@ export default function Step4Form() {
               />{" "}
               con.
             </p>
-            <p className="text-2xl font-bold text-gray-700">
+            <p className="text-2xl font-bold text-black-700">
               Tôi rất mong được nghỉ hưu sớm và độc lập tài chính (FI) ở độ tuổi{" "}
               <input
                 type="number"
@@ -152,13 +151,14 @@ export default function Step4Form() {
             </div>
           </form>
           {/* Placeholder for the illustration */}
-          <div className="mt-6 flex justify-center">
+          <div className="mt-6 flex justify-center mb-6">
             <Image
-              src={financialIndependence}
+              src="/images/icon-step4.png"
               alt="Financial Independence"
               width={450}
               height={450}
               objectFit="contain"
+              loading="lazy"
             />
           </div>
         </div>

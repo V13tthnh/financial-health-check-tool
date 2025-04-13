@@ -128,6 +128,7 @@ export default function DownloadButton({
       >
         <button
           onClick={handleDownload}
+          onTouchStart={handleDownload} 
           className={`font-bold text-lg flex items-center rounded-md transition ${
             isDownloading
               ? "opacity-50 cursor-not-allowed"
@@ -136,7 +137,7 @@ export default function DownloadButton({
           disabled={isDownloading}
           aria-label="Tải xuống ảnh"
         >
-          {isDownloading ? "Đang tải..." : "Tải về Ảnh"}
+          Tải về
           <FaArrowDown className="ml-2" />
         </button>
       </div>

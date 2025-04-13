@@ -108,7 +108,7 @@ export default function Step3Form() {
   return (
     <>
       <div className="flex justify-center items-center min-h-screen">
-        <div className="w-full max-w-2xl mx-auto px-25 py-6 bg-white shadow-md">
+        <div className="w-full max-w-xl mx-auto px-25 py-6 bg-white shadow-md">
           <h2 className="text-2xl text-center mb-6">Bước 3:</h2>
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Thu nhập & Chi phí */}
@@ -185,7 +185,7 @@ export default function Step3Form() {
               />
               .
             </p>
-            <ul className="list-disc list-inside text-lg font-bold text-gray-700 space-y-3">
+            <ul className="list-disc list-inside text-lg font-bold text-gray-700 space-y-2">
               <li>
                 Tôi{" "}
                 <select

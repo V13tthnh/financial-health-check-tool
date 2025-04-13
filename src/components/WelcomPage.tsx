@@ -1,18 +1,16 @@
 import Image from "next/image";
-import moneyWithMinaLogo from "@/public/images/money-with-mina-logo.png";
-import healthCheckIllustration from "@/public/images/health-check-illustration.png";
 
 const WelcomePage = ({ onStart }: { onStart: () => void }) => {
   return (
     <div className="min-h-screen bg-custom-peach flex items-center justify-center p-4">
-      <div className="bg-white shadow-lg max-w-md w-full p-6 flex flex-col items-center">
+      <div className="bg-white shadow-lg max-w-xl w-full p-6 flex flex-col items-center">
         {/* Header*/}
         <div className="w-full flex justify-center mb-6">
           <Image
-            src={moneyWithMinaLogo}
+            src="/images/logo.png"
             alt="Money with Mina Logo"
-            width={140}
-            height={50}
+            width={70}
+            height={70}
             style={{ objectFit: "contain" }}
           />
         </div>
@@ -22,10 +20,10 @@ const WelcomePage = ({ onStart }: { onStart: () => void }) => {
           Xin chào bạn, chúng mình cùng làm quen với nhau nào?
         </h1>
 
-        {/* Illustration Section image */}
+        {/* Illustration Section Image */}
         <div className="w-full flex justify-center mb-8">
           <Image
-            src={healthCheckIllustration}
+            src="/images/image-healthy-check.png"
             alt="Health Check Illustration"
             width={200}
             height={200}
@@ -57,7 +55,7 @@ const WelcomePage = ({ onStart }: { onStart: () => void }) => {
         <div className="w-full flex justify-center mb-8">
           <button
             onClick={onStart}
-            className="px-6 py-3 bg-pink-500 text-white hover:bg-pink-600 transition font-bold rounded"
+            className="px-6 py-3 hover:bg-pink-600 transition font-bold"
           >
             Bắt đầu khám sức khỏe tài chính
           </button>

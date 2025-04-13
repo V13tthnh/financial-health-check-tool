@@ -1,5 +1,6 @@
 import { JSX } from "react";
 import LinkCarousel from "../Common/LinkCarousel";
+import Image from "next/image";
 
 interface Feedback {
   status: string;
@@ -21,86 +22,48 @@ interface FeedbackCardProps {
 export default function FeedbackCard({ feedback }: FeedbackCardProps) {
   const iconMap: { [key: string]: JSX.Element } = {
     veryGood: (
-      <svg width="72" height="72" viewBox="0 0 100 100">
-        <circle
-          cx="50"
-          cy="50"
-          r="40"
-          fill="#d6f0d6"
-          stroke="#000000"
-          strokeWidth="2"
-        />
-        <path
-          d="M35,45 Q50,65 65,45"
-          stroke="currentColor"
-          strokeWidth="3"
-          fill="none"
-        />
-        <circle cx="35" cy="35" r="5" fill="currentColor" />
-        <circle cx="65" cy="35" r="5" fill="currentColor" />
-      </svg>
+      <Image
+        src="/images/icon-rat-tot.png"
+        alt="Rất tốt"
+        width={72}
+        height={72}
+        style={{ objectFit: "contain" }}
+        unoptimized={true}
+        priority={true}
+      />
     ),
     good: (
-      <svg width="72" height="72" viewBox="0 0 100 100">
-        <circle
-          cx="50"
-          cy="50"
-          r="40"
-          fill="#ffffcc"
-          stroke="#000000"
-          strokeWidth="2"
-        />
-        <path
-          d="M35,60 Q50,70 65,60"
-          stroke="currentColor"
-          strokeWidth="3"
-          fill="none"
-        />
-        <circle cx="35" cy="40" r="5" fill="currentColor" />
-        <circle cx="65" cy="40" r="5" fill="currentColor" />
-      </svg>
+      <Image
+        src="/images/icon-tot.png"
+        alt="Tốt"
+        width={72}
+        height={72}
+        style={{ objectFit: "contain" }}
+        unoptimized={true}
+        priority={true}
+      />
     ),
     ok: (
-      <svg width="72" height="72" viewBox="0 0 100 100">
-        <circle
-          cx="50"
-          cy="50"
-          r="40"
-          fill="#ffcccc"
-          stroke="#000000"
-          strokeWidth="2"
-        />
-        <line
-          x1="35"
-          y1="60"
-          x2="65"
-          y2="60"
-          stroke="currentColor"
-          strokeWidth="3"
-        />
-        <circle cx="35" cy="40" r="5" fill="currentColor" />
-        <circle cx="65" cy="40" r="5" fill="currentColor" />
-      </svg>
+      <Image
+        src="/images/icon-tam-on.png"
+        alt="Tạm ổn"
+        width={72}
+        height={72}
+        style={{ objectFit: "contain" }}
+        unoptimized={true}
+        priority={true}
+      />
     ),
     notGood: (
-      <svg width="72" height="72" viewBox="0 0 100 100">
-        <circle
-          cx="50"
-          cy="50"
-          r="40"
-          fill="#ffcccc"
-          stroke="#000000"
-          strokeWidth="2"
-        />
-        <path
-          d="M35,65 Q50,55 65,65"
-          stroke="currentColor"
-          strokeWidth="3"
-          fill="none"
-        />
-        <circle cx="35" cy="40" r="5" fill="currentColor" />
-        <circle cx="65" cy="40" r="5" fill="currentColor" />
-      </svg>
+      <Image
+        src="/images/icon-chua-tot.png"
+        alt="Chưa tốt"
+        width={72}
+        height={72}
+        style={{ objectFit: "contain" }}
+        unoptimized={true}
+        priority={true}
+      />
     ),
   };
 
@@ -112,20 +75,20 @@ export default function FeedbackCard({ feedback }: FeedbackCardProps) {
   }
 
   return (
-    <div className="flex my-6">
-      <div className="flex w-full">
-        <div className="w-3/10 flex flex-col items-center justify-center h-full">
+    <div className="feedback-card my-6 mb-10 mt-10">
+      <div className="flex flex-col md:flex-row w-full">
+        <div className="icon-container flex flex-col items-center justify-center md:w-3/10">
           <div
             className="p-4 flex flex-col items-center justify-center rounded-lg"
             style={{ backgroundColor: feedback.bgColor }}
           >
             {iconMap[feedback.iconType || "ok"]}
-            <p className="text-center text-sm font-bold text-black mt-2">
+            <p className="text-center text-lg font-bold text-black mt-2">
               {feedback.status}
             </p>
           </div>
         </div>
-        <div className="w-7/10">
+        <div className="content-container md:w-7/10 mt-4 md:mt-0">
           <p
             className="text-lg font-semibold"
             dangerouslySetInnerHTML={{ __html: feedback.message }}

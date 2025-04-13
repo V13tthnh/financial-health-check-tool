@@ -1,5 +1,4 @@
 import Image from "next/image";
-import economicGrowth from "@/public/images/economic-growth.png";
 import { FINANCIAL_GOALS } from "@/lib/Constants";
 import {
   getSavingsFeedback,
@@ -12,6 +11,7 @@ import {
 import FeedbackCard from "./FeedbackCard";
 
 import LinkCarousel from "../Common/LinkCarousel";
+import Logo from "../Common/Logo";
 
 // FormData Interface
 interface FormData {
@@ -83,33 +83,36 @@ export default function Tab1Content({ formData }: Tab1ContentProps) {
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="content-tab1 grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Cột trái */}
       <div>
-        <div className="financial-goals-feedback mb-6 rounded-lg">
+        <div className="financial-goals-feedback mb-6 rounded-md">
           <div className="flex items-center mb-4">
             <div className="w-3/10 flex items-center justify-center h-full">
               <Image
-                src={economicGrowth}
+                src="/images/icon-growth.png"
                 alt="Economic Growth"
-                width={450}
-                height={450}
+                width={100}
+                height={100}
                 objectFit="contain"
+                loading="lazy"
+                unoptimized={true}
               />
             </div>
-            <div className="w-7/10 mt-10 mb-3">
-              <h3 className="font-bold text-xl mb-2">
+            <div className="w-7/10 mt-10 mb-2">
+              <h3 className="font-semibold text-xl mb-2">
                 Hiện tại mục tiêu tài chính của bạn là:
               </h3>
-              <p className="font-bold text-2xl">{goals}</p>
+              <p className="font-bold text-xl">{goals}</p>
               <div className="w-full flex justify-center mt-3 mb-5">
                 <LinkCarousel items={links} />
               </div>
             </div>
           </div>
         </div>
-        <hr className="stick my-4 border-gray-300" />
+
         <FeedbackCard feedback={getSavingsFeedback(savingsRateNum)} />
-        <hr className="stick my-4 border-gray-300" />
+        <hr className="stick my-4 w-full" />
         <FeedbackCard
           feedback={getEmergencyFundFeedback(
             step3.emergencyFund,
@@ -118,11 +121,22 @@ export default function Tab1Content({ formData }: Tab1ContentProps) {
           )}
         />
       </div>
+
+      {/* Thanh dọc và logo */}
+      <div
+        className="vertical-stick absolute inset-y-3 left-1/2 w-px hidden md:block"
+        style={{
+          transform: "translateX(-50%)",
+          height: "90%",
+        }}
+      ></div>
+
+      {/* Cột phải */}
       <div>
         <FeedbackCard feedback={getDebtFeedback(step3.debtStatus)} />
-        <hr className="stick my-4 border-gray-300" />
+        <hr className="stick my-4 " />
         <FeedbackCard feedback={getInsuranceFeedback(step3.insurance)} />
-        <hr className="stick my-4 border-gray-300" />
+        <hr className="stick my-4 " />
         <FeedbackCard
           feedback={getBudgetRuleFeedback(
             step3.income,
@@ -131,6 +145,10 @@ export default function Tab1Content({ formData }: Tab1ContentProps) {
             step3.expenses
           )}
         />
+      </div>
+
+      <div className="logo-footer flex justify-center mb-3">
+        <Logo />
       </div>
     </div>
   );
