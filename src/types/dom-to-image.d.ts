@@ -9,5 +9,17 @@ declare module "dom-to-image" {
         height?: number;
       }
     ): Promise<Blob>;
-    export { toBlob };
+
+    function toPng(
+      node: HTMLElement,
+      options?: {
+        bgcolor?: string;
+        useCORS?: boolean;
+        cacheBust?: boolean;
+        width?: number;
+        height?: number;
+      }
+    ): Promise<string>;
+    export default domtoimage;
+    export { toBlob, toPng };
   }
