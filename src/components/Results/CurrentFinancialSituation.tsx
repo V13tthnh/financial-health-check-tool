@@ -85,7 +85,6 @@ export default function CurrentFinancialSituation() {
           >
             <Tab1Content formData={formData} />
           </div>
-
           {/* Tab 2 */}
           <div
             id="tab2-content"

@@ -17,105 +17,91 @@ export default function DownloadButton({
   const handleDownload = async () => {
     if (isDownloading) return;
     setIsDownloading(true);
-  
+
     try {
-      const originalStyles: Record<
-        string,
-        {
-          visibility: string;
-          position: string;
-          display: string;
-          top: string;
-          left: string;
-          zIndex: string;
-        }
-      > = {};
-  
-      // Lưu trữ style ban đầu và đảm bảo hiển thị
-      targetIds.forEach((targetId) => {
+      // Xử lý từng phần tử một thay vì song song
+      for (let i = 0; i < targetIds.length; i++) {
+        const targetId = targetIds[i];
         const element = document.getElementById(targetId);
-        if (element) {
-          originalStyles[targetId] = {
-            visibility: element.style.visibility || "visible",
-            position: element.style.position || "relative",
-            display: element.style.display || "block",
-            top: element.style.top || "auto",
-            left: element.style.left || "auto",
-            zIndex: element.style.zIndex || "auto",
-          };
-          // Đặt style để hiển thị rõ ràng
-          element.style.visibility = "visible";
-          element.style.position = "relative";
-          element.style.display = "block";
-          element.style.top = "0";
-          element.style.left = "0";
-          element.style.zIndex = "1";
-        }
-      });
-  
-      // Chụp ảnh song song
-      const imagePromises = targetIds.map(async (targetId) => {
-        const element = document.getElementById(targetId);
-        if (!element) {
-          console.error(`Element with ID "${targetId}" not found.`);
-          return null;
-        }
-  
-        // Đợi DOM render hoàn tất
-        await new Promise((resolve) => setTimeout(resolve, 100));
-  
+        if (!element) continue;
+
+        // Lưu trữ style ban đầu
+        const originalStyle = {
+          visibility: element.style.visibility || "visible",
+          position: element.style.position || "relative",
+          display: element.style.display || "block",
+          top: element.style.top || "auto",
+          left: element.style.left || "auto",
+          zIndex: element.style.zIndex || "auto",
+        };
+
+        // Hiển thị phần tử
+        element.style.visibility = "visible";
+        element.style.position = "relative";
+        element.style.display = "block";
+        element.style.top = "0";
+        element.style.left = "0";
+        element.style.zIndex = "1";
+
+        // Đợi đảm bảo render đã hoàn tất
+        await new Promise((resolve) => setTimeout(resolve, 200));
+
         try {
+          // Chụp ảnh một phần tử tại một thời điểm
           const dataUrl = await domtoimage.toPng(element, {
             bgcolor: "#ffffff",
-            //useCORS: true,
-            cacheBust: true, // Tránh cache ảnh
+            cacheBust: true,
+            quality: 0.8, // Giảm chất lượng để giảm kích thước
           });
-  
-          return dataUrl;
+
+          // Tải xuống ngay sau khi chụp
+          downloadImage(dataUrl, `${fileName}_part${i + 1}.png`);
         } catch (error) {
           console.error(
             `Failed to create image for element "${targetId}":`,
             error
           );
-          return null;
         }
-      });
-  
-      const dataUrls = await Promise.all(imagePromises);
-  
-      // Khôi phục style ngay lập tức
-      targetIds.forEach((targetId) => {
-        const element = document.getElementById(targetId);
-        if (element) {
-          element.style.visibility = originalStyles[targetId].visibility;
-          element.style.position = originalStyles[targetId].position;
-          element.style.display = originalStyles[targetId].display;
-          element.style.top = originalStyles[targetId].top;
-          element.style.left = originalStyles[targetId].left;
-          element.style.zIndex = originalStyles[targetId].zIndex;
-        }
-      });
-  
-      // Tải xuống các ảnh hợp lệ
-      dataUrls.forEach((dataUrl: string | null, index: number) => {
-        if (dataUrl) {
-          const link = document.createElement("a");
-          link.href = dataUrl;
-          link.download = `${fileName}_part${index + 1}.png`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-      });
-  
-      if (dataUrls.some((dataUrl: string | null) => !dataUrl)) {
-        alert("Có lỗi xảy ra khi tạo một số ảnh. Vui lòng thử lại.");
+
+        // Khôi phục style ban đầu
+        element.style.visibility = originalStyle.visibility;
+        element.style.position = originalStyle.position;
+        element.style.display = originalStyle.display;
+        element.style.top = originalStyle.top;
+        element.style.left = originalStyle.left;
+        element.style.zIndex = originalStyle.zIndex;
       }
     } catch (error) {
       console.error("Lỗi khi tạo bản tải xuống:", error);
       alert("Đã xảy ra lỗi khi tải xuống. Vui lòng thử lại.");
     } finally {
       setIsDownloading(false);
+    }
+  };
+
+  // Hàm hỗ trợ tải xuống với hỗ trợ cho mobile
+  const downloadImage = (dataUrl: string, filename: string) => {
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      // Giải pháp cho thiết bị di động
+      const image = new Image();
+      image.src = dataUrl;
+
+      const newWindow = window.open("");
+      if (newWindow) {
+        newWindow.document.write(image.outerHTML);
+        newWindow.document.title = filename;
+        newWindow.document.close();
+      } else {
+        alert("Vui lòng cho phép cửa sổ popup để tải ảnh xuống");
+      }
+    } else {
+      // Giải pháp cho desktop
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   };
 
