@@ -12,7 +12,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({ message, onClose }) => {
       <div className={styles.modal}>
         <p className={styles.message}>{message}</p>
         <button className={styles.closeButton} onClick={onClose}>
-          Oke
+          Ok
         </button>
       </div>
     </div>
