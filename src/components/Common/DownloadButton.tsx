@@ -1,11 +1,10 @@
 import * as htmlToImage from "html-to-image";
 import { FaArrowDown } from "react-icons/fa";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 interface DownloadButtonProps {
   fileName: string;
   targetIds: string[];
-  format: "image";
 }
 
 interface ImageObject {
@@ -14,82 +13,121 @@ interface ImageObject {
   tabIndex: number;
 }
 
-export default function DownloadButton({
-  fileName,
-  targetIds,
-}: DownloadButtonProps) {
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const downloadRef = useRef<boolean>(false);
-  const modalOpenRef = useRef<boolean>(false);
+// Tách phần CSS thành biến riêng
+const MODAL_STYLES = `
+  .image-container { margin-bottom: 30px; border-bottom: 1px solid #ddd; padding-bottom: 20px; }
+  .image-container:last-child { border-bottom: none; }
+  img { max-width: 100%; border: 1px solid #eee; margin-top: 15px; }
+  .instructions { 
+    margin: 20px auto; 
+    padding: 15px; 
+    background: #f5f5f5;
+    border-radius: 8px;
+    max-width: 400px;
+    line-height: 1.5;
+    font-family: Arial, sans-serif;
+  }
+  .step { margin-bottom: 10px; text-align: left; }
+  h3, h4 { font-family: Arial, sans-serif; text-align: center; }
+  .close-btn {
+    position: sticky;
+    top: 10px;
+    right: 10px;
+    float: right;
+    padding: 8px 16px;
+    background: #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+`;
 
-  const downloadImage = useCallback(
-    async (dataUrl: string, filename: string): Promise<void> => {
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      link.href = "";
-    },
-    []
-  );
+export default function DownloadButton({ fileName, targetIds }: DownloadButtonProps) {
+  const [downloadState, setDownloadState] = useState({
+    isDownloading: false,
+    progress: 0,
+    isModalOpen: false
+  });
+  const isMounted = useRef(true);
 
-  const showMobileImages = useCallback(
-    async (images: ImageObject[], isIOS: boolean): Promise<void> => {
-      if (modalOpenRef.current) return;
-      modalOpenRef.current = true;
+  // Hàm thực hiện tải xuống hình ảnh cho desktop
+  const downloadImage = useCallback(async (dataUrl: string, filename: string): Promise<void> => {
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, []);
 
-      const container = document.createElement("div");
-      container.style.position = "fixed";
-      container.style.top = "0";
-      container.style.left = "0";
-      container.style.width = "100%";
-      container.style.height = "100%";
-      container.style.background = "#fff";
-      container.style.overflow = "auto";
-      container.style.zIndex = "1000";
-      container.style.padding = "15px";
-      container.style.boxSizing = "border-box";
+  // Logic tạo hình ảnh
+  const captureElement = useCallback(async (element: HTMLElement, isMobile: boolean): Promise<string> => {
+    // Lưu style ban đầu
+    //const computedStyle = window.getComputedStyle(element);
+    const originalStyles = {
+      visibility: element.style.visibility,
+      position: element.style.position,
+      display: element.style.display,
+      top: element.style.top,
+      left: element.style.left,
+      zIndex: element.style.zIndex,
+    };
 
-      container.innerHTML = `
+    // Style tạm thời
+    Object.assign(element.style, {
+      visibility: "visible",
+      position: "relative",
+      display: "block",
+      top: "0",
+      left: "0",
+      zIndex: "1",
+    });
+
+    try {
+      const options = {
+        quality: isMobile ? 0.8 : 0.95,
+        backgroundColor: "#ffffff",
+        cacheBust: true,
+        filter: (node: Node) =>
+          node.nodeName !== "IFRAME" &&
+          !(node instanceof Element && node.classList?.contains("no-export")),
+        width: element.offsetWidth,
+        height: element.offsetHeight,
+        style: {
+          transform: "none",
+        },
+      };
+
+      return await htmlToImage.toPng(element, options);
+    } finally {
+      // Khôi phục style ban đầu
+      Object.assign(element.style, originalStyles);
+    }
+  }, []);
+
+  // Hàm thực hiện logic hiển thị modal trên mobile
+  const showMobileImages = useCallback(async (images: ImageObject[], isIOS: boolean): Promise<void> => {
+    if (downloadState.isModalOpen) return;
+    
+    setDownloadState(prev => ({ ...prev, isModalOpen: true }));
+
+    const container = document.createElement("div");
+    container.style.position = "fixed";
+    container.style.top = "0";
+    container.style.left = "0";
+    container.style.width = "100%";
+    container.style.height = "100%";
+    container.style.background = "#fff";
+    container.style.overflow = "auto";
+    container.style.zIndex = "1000";
+    container.style.padding = "15px";
+    container.style.boxSizing = "border-box";
+
+    // Nội dung HTML và CSS hiển thị
+    container.innerHTML = `
       <style>
-        .image-container { margin-bottom: 30px; border-bottom: 1px solid #ddd; padding-bottom: 20px; }
-        .image-container:last-child { border-bottom: none; }
-        img { max-width: 100%; border: 1px solid #eee; margin-top: 15px; }
-        .instructions { 
-          margin: 20px auto; 
-          padding: 15px; 
-          background: #f5f5f5;
-          border-radius: 8px;
-          max-width: 400px;
-          line-height: 1.5;
-          font-family: Arial, sans-serif;
-        }
-        .step { margin-bottom: 10px; text-align: left; }
-        h3, h4 { font-family: Arial, sans-serif; text-align: center; }
-        .close-btn {
-          position: sticky;
-          top: 10px;
-          right: 10px;
-          float: right;
-          padding: 8px 16px;
-          background: #ddd;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-        ${
-          isIOS
-            ? `
-          .ios-steps { display: block; }
-          .android-steps { display: none; }
-        `
-            : `
-          .ios-steps { display: none; }
-          .android-steps { display: block; }
-        `
-        }
+        ${MODAL_STYLES}
+        ${isIOS ? '.ios-steps { display: block; } .android-steps { display: none; }' : 
+                '.ios-steps { display: none; } .android-steps { display: block; }'}
       </style>
       <div class="close-btn">Đóng</div>
       <h3>Kết quả tài chính của bạn</h3>
@@ -116,24 +154,22 @@ export default function DownloadButton({
         .join("")}
     `;
 
-      document.body.appendChild(container);
+    document.body.appendChild(container);
 
-      const closeBtn = container.querySelector(".close-btn");
-      closeBtn?.addEventListener("click", () => {
-        document.body.removeChild(container);
-        images.forEach((img) => (img.dataUrl = ""));
-        images.length = 0;
-        modalOpenRef.current = false;
-      });
-    },
-    []
-  );
+    // Xử lý đóng modal
+    const closeBtn = container.querySelector(".close-btn");
+    closeBtn?.addEventListener("click", () => {
+      document.body.removeChild(container);
+      images.forEach((img) => (img.dataUrl = ""));
+      setDownloadState(prev => ({ ...prev, isModalOpen: false }));
+    });
+  }, [downloadState.isModalOpen]);
 
+  // Xử lý tải xuống
   const handleDownload = useCallback(async () => {
-    if (isDownloading || downloadRef.current || modalOpenRef.current) return;
-    downloadRef.current = true;
-    setIsDownloading(true);
-    setProgress(0);
+    if (downloadState.isDownloading || downloadState.isModalOpen) return;
+    
+    setDownloadState(prev => ({ ...prev, isDownloading: true, progress: 0 }));
 
     try {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -143,91 +179,84 @@ export default function DownloadButton({
       for (let i = 0; i < targetIds.length; i++) {
         const targetId = targetIds[i];
         const element = document.getElementById(targetId);
+        
         if (!element) continue;
 
         // Kiểm tra kích thước phần tử
         if (element.offsetWidth * element.offsetHeight > 4096 * 4096) {
           console.warn("Phần tử quá lớn, có thể gây lỗi trên mobile");
-          alert("Nội dung quá lớn để tải. Vui lòng thử trên desktop.");
-          continue;
+          // Sử dụng window.confirm thay vì alert
+          if (window.confirm("Nội dung quá lớn để tải. Vui lòng thử trên desktop.")) {
+            continue;
+          }
+          break;
         }
 
-        setProgress(Math.round((i / targetIds.length) * 50));
-
-        // Lưu và áp dụng style tạm thời
-        const computedStyle = window.getComputedStyle(element);
-        const originalStyle = {
-          visibility: computedStyle.visibility,
-          position: computedStyle.position,
-          display: computedStyle.display,
-          top: computedStyle.top,
-          left: computedStyle.left,
-          zIndex: computedStyle.zIndex,
-        };
-
-        Object.assign(element.style, {
-          visibility: "visible",
-          position: "relative",
-          display: "block",
-          top: "0",
-          left: "0",
-          zIndex: "1",
-        });
-
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        // Cập nhật tiến độ
+        setDownloadState(prev => ({
+          ...prev,
+          progress: Math.round(((i + 0.5) / targetIds.length) * 50)
+        }));
 
         try {
-          const options = {
-            quality: isMobile ? 0.8 : 0.95, // Giảm chất lượng trên mobile
-            backgroundColor: "#ffffff",
-            cacheBust: true, // Tránh cache
-            filter: (node: Node) =>
-              node.nodeName !== "IFRAME" &&
-              !(
-                node instanceof Element && node.classList?.contains("no-export")
-              ),
-            width: element.offsetWidth,
-            height: element.offsetHeight,
-            style: {
-              transform: "none", // Loại bỏ transform để tránh lỗi render
-            },
-          };
-
-          const dataUrl = await htmlToImage.toPng(element, options);
-          allImages.push({
+          // Tạo ảnh
+          const dataUrl = await captureElement(element, isMobile);
+          
+          // Thêm vào danh sách ảnh
+          const imageObj = {
             dataUrl,
             filename: `${fileName}_part${i + 1}.png`,
             tabIndex: i + 1,
-          });
+          };
+          allImages.push(imageObj);
 
-          setProgress(Math.round(((i + 0.5) / targetIds.length) * 100));
-
+          // Tải xuống trực tiếp trên desktop
           if (!isMobile) {
-            await downloadImage(dataUrl, `${fileName}_part${i + 1}.png`);
+            await downloadImage(dataUrl, imageObj.filename);
           }
+
+          // Cập nhật tiến độ
+          setDownloadState(prev => ({
+            ...prev,
+            progress: Math.round(((i + 1) / targetIds.length) * 100)
+          }));
         } catch (error) {
           console.error(`Lỗi chụp "${targetId}":`, error);
-          alert(`Không thể tạo ảnh cho phần "${i + 1}". Vui lòng thử lại.`);
-        } finally {
-          // Khôi phục style
-          Object.assign(element.style, originalStyle);
+          if (window.confirm(`Không thể tạo ảnh cho phần "${i + 1}". Vui lòng thử lại.`)) {
+            continue;
+          }
+          break;
         }
-
-        await new Promise((resolve) => setTimeout(resolve, 50));
       }
 
+      // Hiển thị modal trên mobile
       if (isMobile && allImages.length > 0) {
         await showMobileImages(allImages, isIOS);
       }
     } catch (error) {
       console.error("Lỗi tải xuống:", error);
-      alert("Đã xảy ra lỗi khi tải xuống. Vui lòng thử lại.");
+      window.confirm("Đã xảy ra lỗi khi tải xuống. Vui lòng thử lại.");
     } finally {
-      setIsDownloading(false);
-      downloadRef.current = false;
-      setProgress(0);
+      if (isMounted.current) {
+        setDownloadState(prev => ({ ...prev, isDownloading: false, progress: 0 }));
+      }
     }
-  }, [isDownloading, fileName, targetIds, downloadImage, showMobileImages]);
+  }, [
+    downloadState.isDownloading,
+    downloadState.isModalOpen,
+    fileName,
+    targetIds,
+    captureElement,
+    downloadImage,
+    showMobileImages,
+  ]);
+
+  // Xử lý unmount component
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   return (
     <div className="flex justify-center">
@@ -238,17 +267,17 @@ export default function DownloadButton({
         <button
           onClick={handleDownload}
           className={`font-bold text-lg flex items-center rounded-md transition px-4 py-2 ${
-            isDownloading
+            downloadState.isDownloading
               ? "opacity-50 cursor-not-allowed"
               : "hover:tab-2-number"
           }`}
-          disabled={isDownloading}
+          disabled={downloadState.isDownloading}
           aria-label="Tải xuống ảnh"
         >
-          {isDownloading ? (
+          {downloadState.isDownloading ? (
             <>
               <span>
-                Đang tải xuống {progress > 0 ? `${progress}%` : "..."}
+                Đang tải xuống {downloadState.progress > 0 ? `${downloadState.progress}%` : "..."}
               </span>
               <div className="ml-2 h-4 w-4 rounded-full border-2 border-t-2 border-gray-300 border-t-blue-600 animate-spin"></div>
             </>
