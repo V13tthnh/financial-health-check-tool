@@ -48,6 +48,7 @@ export default function DownloadButton({ fileName, targetIds }: DownloadButtonPr
     isModalOpen: false
   });
   const isMounted = useRef(true);
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   // Hàm thực hiện tải xuống hình ảnh cho desktop
   const downloadImage = useCallback(async (dataUrl: string, filename: string): Promise<void> => {
@@ -61,8 +62,9 @@ export default function DownloadButton({ fileName, targetIds }: DownloadButtonPr
 
   // Logic tạo hình ảnh
   const captureElement = useCallback(async (element: HTMLElement, isMobile: boolean): Promise<string> => {
-    // Lưu style ban đầu
-    //const computedStyle = window.getComputedStyle(element);
+    if (!element) return '';
+    
+    // Sao lưu styles hiện tại
     const originalStyles = {
       visibility: element.style.visibility,
       position: element.style.position,
@@ -72,24 +74,31 @@ export default function DownloadButton({ fileName, targetIds }: DownloadButtonPr
       zIndex: element.style.zIndex,
     };
 
-    // Style tạm thời
-    Object.assign(element.style, {
-      visibility: "visible",
-      position: "relative",
-      display: "block",
-      top: "0",
-      left: "0",
-      zIndex: "1",
-    });
-
     try {
+      // Áp dụng styles tạm thời cho quá trình capture
+      Object.assign(element.style, {
+        visibility: "visible",
+        position: "relative",
+        display: "block",
+        top: "0",
+        left: "0",
+        zIndex: "1",
+      });
+
+      // Tìm và tạm thời ẩn các phần tử có thể gây lỗi
+      const problematicElements = element.querySelectorAll('iframe, canvas, video');
+      problematicElements.forEach(el => {
+        (el as HTMLElement).style.visibility = 'hidden';
+      });
+
       const options = {
         quality: isMobile ? 0.8 : 0.95,
         backgroundColor: "#ffffff",
         cacheBust: true,
-        filter: (node: Node) =>
-          node.nodeName !== "IFRAME" &&
-          !(node instanceof Element && node.classList?.contains("no-export")),
+        filter: (node: Node) => {
+          return node.nodeName !== "IFRAME" &&
+            !(node instanceof Element && node.classList?.contains("no-export"));
+        },
         width: element.offsetWidth,
         height: element.offsetHeight,
         style: {
@@ -97,20 +106,53 @@ export default function DownloadButton({ fileName, targetIds }: DownloadButtonPr
         },
       };
 
-      return await htmlToImage.toPng(element, options);
+      // Sử dụng toPng với timeout dài hơn cho mobile
+      return await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error("Capture element timeout"));
+        }, isMobile ? 15000 : 5000);
+
+        htmlToImage
+          .toPng(element, options)
+          .then((dataUrl) => {
+            clearTimeout(timeout);
+            resolve(dataUrl);
+          })
+          .catch((error) => {
+            clearTimeout(timeout);
+            reject(error);
+          });
+      });
     } finally {
       // Khôi phục style ban đầu
       Object.assign(element.style, originalStyles);
+      
+      // Khôi phục các phần tử đã ẩn
+      const problematicElements = element.querySelectorAll('iframe, canvas, video');
+      problematicElements.forEach(el => {
+        (el as HTMLElement).style.visibility = '';
+      });
     }
+  }, []);
+
+  // Xử lý đóng modal
+  const closeModal = useCallback(() => {
+    if (modalRef.current && modalRef.current.parentNode) {
+      document.body.removeChild(modalRef.current);
+      modalRef.current = null;
+    }
+    setDownloadState(prev => ({ ...prev, isModalOpen: false }));
   }, []);
 
   // Hàm thực hiện logic hiển thị modal trên mobile
   const showMobileImages = useCallback(async (images: ImageObject[], isIOS: boolean): Promise<void> => {
-    if (downloadState.isModalOpen) return;
+    if (downloadState.isModalOpen || modalRef.current) return;
     
     setDownloadState(prev => ({ ...prev, isModalOpen: true }));
 
     const container = document.createElement("div");
+    modalRef.current = container;
+    
     container.style.position = "fixed";
     container.style.top = "0";
     container.style.left = "0";
@@ -129,7 +171,7 @@ export default function DownloadButton({ fileName, targetIds }: DownloadButtonPr
         ${isIOS ? '.ios-steps { display: block; } .android-steps { display: none; }' : 
                 '.ios-steps { display: none; } .android-steps { display: block; }'}
       </style>
-      <div class="close-btn">Đóng</div>
+      <div class="close-btn" id="modal-close-btn">Đóng</div>
       <h3>Kết quả tài chính của bạn</h3>
       <div class="instructions">
         <h4>Cách lưu ảnh:</h4>
@@ -142,28 +184,44 @@ export default function DownloadButton({ fileName, targetIds }: DownloadButtonPr
           <div class="step">2. Chọn "Download image" hoặc "Save image"</div>
         </div>
       </div>
-      ${images
-        .map(
-          (img) => `
-        <div class="image-container">
-          <h4>Nội dung ${img.tabIndex}</h4>
-          <img src="${img.dataUrl}" alt="Kết quả tài chính phần ${img.tabIndex}">
-        </div>
-      `
-        )
-        .join("")}
+      <div id="images-container"></div>
     `;
 
     document.body.appendChild(container);
 
     // Xử lý đóng modal
-    const closeBtn = container.querySelector(".close-btn");
-    closeBtn?.addEventListener("click", () => {
-      document.body.removeChild(container);
-      images.forEach((img) => (img.dataUrl = ""));
-      setDownloadState(prev => ({ ...prev, isModalOpen: false }));
-    });
-  }, [downloadState.isModalOpen]);
+    const closeBtn = container.querySelector("#modal-close-btn");
+    closeBtn?.addEventListener("click", closeModal);
+    
+    // Thêm hình ảnh vào container sau khi container đã được thêm vào DOM
+    const imagesContainer = container.querySelector("#images-container");
+    if (imagesContainer) {
+      for (let i = 0; i < images.length; i++) {
+        const img = images[i];
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'image-container';
+        imageDiv.innerHTML = `
+          <h4>Nội dung ${img.tabIndex}</h4>
+          <img src="${img.dataUrl}" alt="Kết quả tài chính phần ${img.tabIndex}">
+        `;
+        imagesContainer.appendChild(imageDiv);
+      }
+    }
+  }, [downloadState.isModalOpen, closeModal]);
+
+  // Xử lý khi người dùng ấn vào nút thoát modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && downloadState.isModalOpen) {
+        closeModal();
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [downloadState.isModalOpen, closeModal]);
 
   // Xử lý tải xuống
   const handleDownload = useCallback(async () => {
@@ -180,16 +238,9 @@ export default function DownloadButton({ fileName, targetIds }: DownloadButtonPr
         const targetId = targetIds[i];
         const element = document.getElementById(targetId);
         
-        if (!element) continue;
-
-        // Kiểm tra kích thước phần tử
-        if (element.offsetWidth * element.offsetHeight > 4096 * 4096) {
-          console.warn("Phần tử quá lớn, có thể gây lỗi trên mobile");
-          // Sử dụng window.confirm thay vì alert
-          if (window.confirm("Nội dung quá lớn để tải. Vui lòng thử trên desktop.")) {
-            continue;
-          }
-          break;
+        if (!element) {
+          console.warn(`Không tìm thấy phần tử với ID: ${targetId}`);
+          continue;
         }
 
         // Cập nhật tiến độ
@@ -201,6 +252,10 @@ export default function DownloadButton({ fileName, targetIds }: DownloadButtonPr
         try {
           // Tạo ảnh
           const dataUrl = await captureElement(element, isMobile);
+          
+          if (!dataUrl || dataUrl.length < 1000) {  // Kiểm tra nếu dataUrl quá ngắn (có thể là ảnh trống)
+            throw new Error("Không thể tạo ảnh hợp lệ");
+          }
           
           // Thêm vào danh sách ảnh
           const imageObj = {
@@ -232,10 +287,12 @@ export default function DownloadButton({ fileName, targetIds }: DownloadButtonPr
       // Hiển thị modal trên mobile
       if (isMobile && allImages.length > 0) {
         await showMobileImages(allImages, isIOS);
+      } else if (allImages.length === 0) {
+        throw new Error("Không thể tạo bất kỳ hình ảnh nào");
       }
     } catch (error) {
       console.error("Lỗi tải xuống:", error);
-      window.confirm("Đã xảy ra lỗi khi tải xuống. Vui lòng thử lại.");
+      window.alert("Đã xảy ra lỗi khi tải xuống. Vui lòng thử lại.");
     } finally {
       if (isMounted.current) {
         setDownloadState(prev => ({ ...prev, isDownloading: false, progress: 0 }));
@@ -255,6 +312,9 @@ export default function DownloadButton({ fileName, targetIds }: DownloadButtonPr
   useEffect(() => {
     return () => {
       isMounted.current = false;
+      if (modalRef.current && modalRef.current.parentNode) {
+        document.body.removeChild(modalRef.current);
+      }
     };
   }, []);
 

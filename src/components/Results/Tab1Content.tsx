@@ -99,7 +99,7 @@ export default function Tab1Content({ formData }: Tab1ContentProps) {
                 unoptimized={true}
               />
             </div>
-            <div className="w-7/10 mt-10 mb-2">
+            <div className="w-7/10 mt-10 pr-3 pl-3 mb-2">
               <h3 className="font-semibold text-xl mb-2">
                 Hiện tại mục tiêu tài chính của bạn là:
               </h3>
