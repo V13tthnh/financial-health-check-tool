@@ -66,7 +66,7 @@ export function getSavingsFeedback(rate: number): Feedback {
       status: "Tốt",
       message:
         "Bạn đang tiết kiệm khá tốt. Chỉ cần kiên trì với kỷ luật thép, bạn sẽ tiến gần hơn với mục tiêu Độc lập tài chính của mình.",
-      bgColor: "rgb(209, 250, 229)", // bg-green-100
+      bgColor: "rgb(254, 243, 199)", // bg-yellow-100
       type: "savings",
       iconType: "good",
     };
@@ -75,7 +75,7 @@ export function getSavingsFeedback(rate: number): Feedback {
       status: "Tạm ổn",
       message:
         "Bạn đang tiết kiệm với tỷ lệ trung bình, bạn có thể tăng tỷ lệ tiết kiệm ít nhất 20% mỗi tháng, mục tiêu ĐLTC sẽ đến gần với bạn hơn, bạn nhé.",
-      bgColor: "rgb(254, 243, 199)", // bg-yellow-100
+      bgColor: "#fcb08c", // bg-orange-100
       type: "savings",
       iconType: "ok",
       link,
@@ -85,7 +85,7 @@ export function getSavingsFeedback(rate: number): Feedback {
       status: "Chưa tốt",
       message:
         "Bạn đang tiết kiệm với tỷ lệ thấp, bạn có thể tăng tỷ lệ tiết kiệm ít nhất 20% mỗi tháng, mục tiêu ĐLTC sẽ đến gần với bạn hơn, bạn nhé.",
-      bgColor: "#fa9496", // bg-orange-100
+      bgColor: "#fea6a7", // bg-orange-100
       type: "savings",
       iconType: "notGood",
       link,
@@ -94,7 +94,7 @@ export function getSavingsFeedback(rate: number): Feedback {
     status: "Chưa tốt",
     message:
       "Bạn chưa tiết kiệm được nhiều, bạn chỉ cần cố gắng thêm một chút thôi. Nếu bạn không tiết kiệm được ít nhất 5% mỗi tháng, đồng nghĩa bạn đang sống quá khả năng của mình. Bạn có thể tìm hiểu các cách thu nhập đa chiều để tăng dòng thu của mình nhé.",
-    bgColor: "#fa9496", // bg-red-100
+    bgColor: "#fea6a7", // bg-red-100
     type: "savings",
     iconType: "notGood",
     link,
@@ -112,7 +112,7 @@ export function getEmergencyFundFeedback(
       status: "Tốt",
       message:
         "Bạn đang có tối thiểu 3 tháng lương cho quỹ dự phòng của mình, chúc mừng bạn. Quỹ dự phòng sẽ giúp cho bạn giải quyết một vài sự cố trong cuộc sống như mất việc, hư xe, y tế sức khoẻ. Bạn nhớ lấp đầy quỹ trở lại đến lúc cần sử dụng quỹ nhé!",
-      bgColor: "rgb(209, 250, 229)", // bg-green-100
+      bgColor: "rgb(254, 243, 199)", // bg-yellow-100
       type: "emergencyFund",
       iconType: "good",
     };
@@ -121,7 +121,7 @@ export function getEmergencyFundFeedback(
       status: "Tạm ổn",
       message:
         "Bạn chưa có tối thiểu 3 tháng lương cho quỹ dự phòng của mình, bạn cần phải dành dụm từ bây giờ nhé. Quỹ dự phòng sẽ giúp cho bạn vượt qua các sự cố bất ngờ như mất việc, hư xe, y tế sức khoẻ,...",
-      bgColor: "rgb(254, 243, 199)", // bg-yellow-100
+      bgColor: "#fcb08c", // bg-orange-100
       type: "emergencyFund",
       iconType: "ok",
     };
@@ -129,7 +129,7 @@ export function getEmergencyFundFeedback(
     status: "Chưa tốt",
     message:
       "Bạn chưa có đủ quỹ dự phòng, vì thế để an tâm hơn bạn nên dành khoảng 03 - 06 tháng lương hiện tại cho quỹ. Đây là bước khởi đầu trước khi bạn mong muốn đầu tư tăng trưởng cho mục tiêu Tự Do Tài Chính của mình",
-    bgColor: "#fa9496", // bg-red-100
+    bgColor: "#fea6a7", // bg-red-100
     type: "emergencyFund",
     iconType: "notGood",
   };
@@ -146,7 +146,7 @@ export function getDebtFeedback(
     return {
       status: "Chưa tốt",
       message: `Bạn vẫn còn có nợ, vì thế hãy giải quyết nợ một cách hiệu quả sau khi có quỹ dự phòng nhé.`,
-      bgColor: "#fa9496", // bg-pink-100
+      bgColor: "#fea6a7", // bg-pink-100
       type: "debt",
       iconType: "notGood",
       link,
@@ -155,7 +155,7 @@ export function getDebtFeedback(
     return {
       status: "Tạm ổn",
       message: `Bạn đang dự định muốn vay nợ, bạn có thể xem video tại link này cách giải quyết nợ và biết thêm về những loại nợ nên và không nên có <a href="${link.url}" class="text-blue-500 underline">${link.text}</a> để biết cách giải quyết nợ...`,
-      bgColor: "rgb(254, 243, 199)", // bg-yellow-100
+      bgColor: "#fcb08c", // bg-orange-100
       type: "debt",
       iconType: "ok",
       link,
@@ -163,7 +163,7 @@ export function getDebtFeedback(
   return {
     status: "Tốt",
     message: `Bạn hiện nay không có nợ, rất tốt! Nợ có thể sẽ đem đến áp lực tài chính nhưng cũng tạo kỷ luật cho bạn nếu bạn biết sử dụng nợ một cách hiệu quả, nhằm mục đích xây dựng tài sản cho mình trong tương lai. Trong video sau, bạn có thể xem những loại nợ không nên có Xem thêm về các loại nợ không nên có.`,
-    bgColor: "rgb(209, 250, 229)", // bg-green-100
+    bgColor: "rgb(254, 243, 199)", // bg-yellow-100
     type: "debt",
     iconType: "good",
     link,
@@ -179,7 +179,7 @@ export function getInsuranceFeedback(
   };
   if (status === "yes")
     return {
-      status: "Tốt",
+      status: "Rất tốt",
       message:
         "Bạn đang góp tiền bảo hiểm hàng tháng, rất tốt! Nếu là bảo hiểm nhân thọ có kèm chi phí y tế và liên kết đầu tư, bạn cần xem lại các lợi ích chính như y tế nằm viện, bệnh hiểm nghèo, qua đời và đặc biệt chú ý mức lương hưu trí sau thời hạn góp của mình là bao nhiêu nhé.",
       bgColor: "rgb(209, 250, 229)", // bg-green-100
@@ -188,8 +188,8 @@ export function getInsuranceFeedback(
     };
   return {
     status: "Chưa tốt",
-    message: `Bạn chưa mua bảo hiểm, việc này có thể ảnh hưởng đến mục tiêu Tự Do Tài Chính của bạn. Vì nếu có vấn đề xảy ra với sức khoẻ của bạn và gia đình, có thể bạn cần phải bán tài sản hoặc cắt lỗ đầu tư để lo phần tài chính. Cho những ai cần phải nghĩ đến bảo hiểm sức khoẻ.`,
-    bgColor: "#fa9496",
+    message: `Bạn chưa mua bảo hiểm, việc này có thể ảnh hưởng đến mục tiêu Tự Do Tài Chính của bạn. Vì nếu có vấn đề xảy ra với sức khoẻ của bạn và gia đình, có thể bạn cần phải bán tài sản hoặc cắt lỗ đầu tư để lo phần tài chính.`,
+    bgColor: "#fea6a7",
     type: "insurance",
     iconType: "notGood",
     link,
@@ -227,7 +227,7 @@ export function getBudgetRuleFeedback(
 
   if (isNeedsOk && isWantsOk && isSavingsOk) {
     return {
-      status: "Tốt",
+      status: "Rất tốt",
       message: "Bạn đã phân bổ chi tiêu theo quy tắc 50-30-20, rất tốt!",
       bgColor: "rgb(209, 250, 229)",
       type: "budget",
@@ -237,7 +237,7 @@ export function getBudgetRuleFeedback(
   return {
     status: "Chưa tốt",
     message: `Chi phí bạn liệt kê cho thấy rằng bạn vẫn chưa rõ về quy tắc 50-30-20 (Cần-Muốn-Tiết Kiệm). Việc phân bổ chi tiêu sẽ không được tối ưu hiệu quả. Các bài viết sau có thể hướng dẫn bạn tốt hơn về chi tiêu và ngân sách của mình.`,
-    bgColor: "#fa9496",
+    bgColor: "#fea6a7",
     type: "budget",
     iconType: "notGood",
     link,
