@@ -13,7 +13,6 @@ interface ImageObject {
   tabIndex: number;
 }
 
-// Tách phần CSS thành biến riêng
 const MODAL_STYLES = `
   .image-container { margin-bottom: 30px; border-bottom: 1px solid #ddd; padding-bottom: 20px; }
   .image-container:last-child { border-bottom: none; }
@@ -53,6 +52,33 @@ export default function DownloadButton({
   const isMounted = useRef(true);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
+  // Hàm chờ tất cả ảnh tải hoàn tất
+  const waitForImagesToLoad = (element: HTMLElement): Promise<void> => {
+    const images = element.querySelectorAll("img");
+    if (images.length === 0) return Promise.resolve();
+
+    const promises: Promise<void>[] = Array.from(images).map((img) => {
+      if (img.complete && img.naturalHeight !== 0) {
+        return Promise.resolve();
+      }
+      return new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error(`Không tải được ảnh: ${img.src}`));
+        setTimeout(
+          () => reject(new Error(`Timeout khi tải ảnh: ${img.src}`)),
+          10000
+        );
+      });
+    });
+
+    return Promise.all<void>(promises)
+      .then(() => Promise.resolve()) // Đảm bảo trả về Promise<void>
+      .catch((error: unknown) => {
+        console.warn("Lỗi khi chờ ảnh tải:", error);
+        return Promise.resolve(); // Tiếp tục dù có lỗi
+      });
+  };
+
   const downloadImage = useCallback(
     async (dataUrl: string, filename: string): Promise<void> => {
       const link = document.createElement("a");
@@ -78,6 +104,9 @@ export default function DownloadButton({
         zIndex: element.style.zIndex,
       };
 
+      // Khai báo problematicElements ngoài try để dùng trong finally
+      let problematicElements: NodeListOf<HTMLElement> | null = null;
+
       try {
         Object.assign(element.style, {
           visibility: "visible",
@@ -88,15 +117,17 @@ export default function DownloadButton({
           zIndex: "1",
         });
 
-        const problematicElements = element.querySelectorAll(
-          "iframe, canvas, video"
-        );
+        problematicElements = element.querySelectorAll("iframe, canvas, video");
         problematicElements.forEach((el) => {
-          (el as HTMLElement).style.visibility = "hidden";
+          el.style.visibility = "hidden";
         });
 
+        console.log("Đang chờ ảnh tải cho phần tử:", element.id);
+        await waitForImagesToLoad(element);
+        console.log("Tất cả ảnh đã tải xong");
+
         const options = {
-          quality: isMobile ? 0.8 : 0.95,
+          quality: isMobile ? 0.7 : 0.95,
           backgroundColor: "#ffffff",
           cacheBust: true,
           filter: (node: Node) => {
@@ -112,35 +143,44 @@ export default function DownloadButton({
           style: {
             transform: "none",
           },
+          imagePlaceholder:
+            "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==",
         };
 
-        return await new Promise((resolve, reject) => {
+        return await new Promise<string>((resolve, reject) => {
           const timeout = setTimeout(
             () => {
               reject(new Error("Capture element timeout"));
             },
-            isMobile ? 15000 : 5000
+            isMobile ? 20000 : 5000
           );
 
           htmlToImage
             .toPng(element, options)
             .then((dataUrl) => {
               clearTimeout(timeout);
-              resolve(dataUrl);
+              if (!dataUrl || dataUrl.length < 1000) {
+                reject(new Error("Ảnh tạo ra không hợp lệ"));
+              } else {
+                console.log("Ảnh đã tạo:", dataUrl.slice(0, 50));
+                resolve(dataUrl);
+              }
             })
             .catch((error) => {
               clearTimeout(timeout);
               reject(error);
             });
         });
+      } catch (error) {
+        console.error("Lỗi chụp ảnh:", error);
+        return "";
       } finally {
         Object.assign(element.style, originalStyles);
-        const problematicElements = element.querySelectorAll(
-          "iframe, canvas, video"
-        );
-        problematicElements.forEach((el) => {
-          (el as HTMLElement).style.visibility = "";
-        });
+        if (problematicElements) {
+          problematicElements.forEach((el) => {
+            el.style.visibility = "";
+          });
+        }
       }
     },
     []
@@ -174,8 +214,7 @@ export default function DownloadButton({
       container.style.padding = "15px";
       container.style.boxSizing = "border-box";
 
-      // Log to verify the number of images
-      console.log("Rendering images in modal:", images.length, images);
+      console.log("Số lượng ảnh trong modal:", images.length);
 
       container.innerHTML = `
         <style>
@@ -209,25 +248,20 @@ export default function DownloadButton({
 
       const imagesContainer = container.querySelector("#images-container");
       if (imagesContainer) {
-        // Clear any existing content to avoid duplicates
         imagesContainer.innerHTML = "";
-
-        // Iterate through all images and append them
         images.forEach((img) => {
-          console.log(`Appending image ${img.tabIndex}:`, img.dataUrl); // Debug log
+          console.log(`Thêm ảnh ${img.tabIndex}:`, img.dataUrl.slice(0, 50));
           const imageDiv = document.createElement("div");
           imageDiv.className = "image-container";
           imageDiv.innerHTML = `
             <h4>Nội dung ${img.tabIndex}</h4>
-            <img src="${img.dataUrl}" alt="Kết quả tài chính phần ${img.tabIndex}">
+            <img src="${img.dataUrl}" alt="Kết quả tài chính phần ${img.tabIndex}" style="max-width: 100%; height: auto;">
           `;
           imagesContainer.appendChild(imageDiv);
         });
-
-        // Force a reflow to ensure DOM updates
         imagesContainer.scrollTop = imagesContainer.scrollTop;
       } else {
-        console.error("Images container not found in modal");
+        console.error("Không tìm thấy images-container");
       }
     },
     [downloadState.isModalOpen, closeModal]
@@ -239,11 +273,8 @@ export default function DownloadButton({
         closeModal();
       }
     };
-
     window.addEventListener("keydown", handleEscape);
-    return () => {
-      window.removeEventListener("keydown", handleEscape);
-    };
+    return () => window.removeEventListener("keydown", handleEscape);
   }, [downloadState.isModalOpen, closeModal]);
 
   const handleDownload = useCallback(async () => {
@@ -272,9 +303,8 @@ export default function DownloadButton({
 
         try {
           const dataUrl = await captureElement(element, isMobile);
-
-          if (!dataUrl || dataUrl.length < 1000) {
-            throw new Error("Không thể tạo ảnh hợp lệ");
+          if (!dataUrl) {
+            throw new Error("Không tạo được ảnh");
           }
 
           const imageObj = {
@@ -305,8 +335,6 @@ export default function DownloadButton({
         }
       }
 
-      console.log("Images to display:", allImages);
-
       if (isMobile && allImages.length > 0) {
         await showMobileImages(allImages, isIOS);
       } else if (allImages.length === 0) {
@@ -316,12 +344,11 @@ export default function DownloadButton({
       console.error("Lỗi tải xuống:", error);
       window.alert("Đã xảy ra lỗi khi tải xuống. Vui lòng thử lại.");
     } finally {
-      // Luôn đặt lại trạng thái, bất kể thành công hay thất bại
       setDownloadState((prev) => ({
         ...prev,
         isDownloading: false,
         progress: 0,
-        isModalOpen: prev.isModalOpen, // Giữ nguyên trạng thái modal
+        isModalOpen: prev.isModalOpen,
       }));
     }
   }, [
