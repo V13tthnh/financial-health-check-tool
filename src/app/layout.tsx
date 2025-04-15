@@ -4,21 +4,21 @@ import { Metadata } from "next";
 
 // Định nghĩa metadata tĩnh
 export const metadata: Metadata = {
-  title: "Money With Mina",
-  description: "Khám phá cách đạt tự do tài chính với Money With Mina!",
+  title: 'Money With Mina',
+  description: 'Khám phá cách đạt tự do tài chính với Money With Mina!',
   openGraph: {
-    title: "Tôi muốn đạt tự do tài chính!",
-    description: "Khám phá cách đạt tự do tài chính với Money With Mina!",
+    title: 'Tôi muốn đạt tự do tài chính!',
+    description: 'Khám phá cách đạt tự do tài chính với Money With Mina!',
     images: [
       {
-        url: "https://example.com/path-to-your-image.jpg",
+        url: 'https://example.com/path-to-your-image.jpg',
         width: 1200,
         height: 630,
-        alt: "Money With Mina",
+        alt: 'Money With Mina',
       },
     ],
-    url: "https://moneywithmina.com/",
-    type: "website",
+    url: 'https://moneywithmina.com/',
+    type: 'website',
   },
 };
 
@@ -29,18 +29,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <head>
-        <link
+      <head><link
           rel="icon"
-          href="https://moneywithmina.com/wp-content/uploads/2023/08/cropped-favicon-192x192-1-100x100.png"
+          href="/images/logo-favicon-192x192-1.png"
           sizes="192x192"
-        />
-      </head>
-      <body>
-        <FormProvider>
-          <main>{children}</main>
-        </FormProvider>
-      </body>
-    </html>
+        /></head>
+    <body>
+      <FormProvider>
+        <main>{children}</main>
+      </FormProvider>
+    </body>
+  </html>
   );
 }
