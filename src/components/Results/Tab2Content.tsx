@@ -166,7 +166,6 @@ export default function Tab2Content({
             <DownloadButton
               fileName="Tab2Content"
               targetIds={["tab1-content", "tab2-content"]}
-              format="image"
             />
             <Logo />
           </div>
