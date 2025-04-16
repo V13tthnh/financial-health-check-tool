@@ -154,7 +154,7 @@ export function getDebtFeedback(
   if (status === "planning")
     return {
       status: "Tạm ổn",
-      message: `Bạn đang dự định muốn vay nợ, bạn có thể xem video tại link này cách giải quyết nợ và biết thêm về những loại nợ nên và không nên có <a href="${link.url}" class="text-blue-500 underline">${link.text}</a> để biết cách giải quyết nợ...`,
+      message: `Bạn đang dự định muốn vay nợ, bạn có thể xem video tại link này cách giải quyết nợ và biết thêm về những loại nợ nên và không nên có để biết cách giải quyết nợ...`,
       bgColor: "#fcb08c", // bg-orange-100
       type: "debt",
       iconType: "ok",

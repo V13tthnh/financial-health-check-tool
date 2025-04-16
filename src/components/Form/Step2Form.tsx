@@ -71,17 +71,17 @@ export default function Step2Form() {
                   </label>
                   {/* Add buttons in the same row as "Khác" (last item) */}
                   {index === FINANCIAL_GOALS.length - 1 && (
-                    <div className="flex justify-center gap-4">
+                    <div className="flex justify-center gap-1">
                       <button
                         type="button"
                         onClick={handleBack}
-                        className="px-6 py-2 bg-gray-200 text-black hover:bg-gray-300 transition font-semibold flex items-center"
+                        className="mt-3 mb-3 mx-2 bg-gray-200 text-black hover:bg-gray-300 transition font-semibold flex items-center px-6 py-2"
                       >
                         <FaArrowLeft className="w-4 h-4 mr-2" />
                       </button>
                       <button
                         type="submit"
-                        className="px-6 py-2 bg-pink-200 text-black hover:bg-pink-300 transition font-semibold flex items-center"
+                        className="mt-3 mb-3 mx-2 bg-pink-200 text-black hover:bg-pink-300 transition font-semibold flex items-center px-6 py-2"
                       >
                         <FaArrowRight className="w-4 h-4 ml-2" />
                       </button>

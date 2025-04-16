@@ -77,7 +77,6 @@ export default function ShareButtons({
             fill
             sizes="48px"
             style={{ objectFit: "cover" }}
-            loading="lazy"
             unoptimized={true}
             crossOrigin="anonymous"
           />
@@ -93,7 +92,6 @@ export default function ShareButtons({
             fill
             sizes="48px"
             style={{ objectFit: "cover" }}
-            loading="lazy"
             unoptimized={true}
             crossOrigin="anonymous"
           />
@@ -109,7 +107,6 @@ export default function ShareButtons({
             fill
             sizes="48px"
             style={{ objectFit: "cover" }}
-            loading="lazy"
             crossOrigin="anonymous"
             unoptimized={true}
           />

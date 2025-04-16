@@ -95,7 +95,6 @@ export default function Tab1Content({ formData }: Tab1ContentProps) {
                 width={100}
                 height={100}
                 objectFit="contain"
-                loading="lazy"
                 unoptimized={true}
               />
             </div>
