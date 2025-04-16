@@ -117,7 +117,7 @@ export default function Step1Form() {
           <h2 className="text-2xl text-center mb-6">Bước 1</h2>
           <form onSubmit={handleSubmit}>
             <div className="text-center text-black mb-6">
-              <p className="text-lg font-bold">
+              <p className="text-lg font-bold leading-loose">
                 Xin chào! Tên tôi là{" "}
                 <input
                   type="text"
@@ -237,7 +237,6 @@ export default function Step1Form() {
               alt="Conversation Illustration"
               width={300}
               height={300}
-              loading="lazy"
               className="mx-auto"
             />
           </div>

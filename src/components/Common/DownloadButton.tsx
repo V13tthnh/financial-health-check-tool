@@ -52,7 +52,7 @@ export default function DownloadButton({
   const isMounted = useRef(true);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  // Hàm chờ tất cả ảnh tải hoàn tất
+  // Hàm chờ tất cả ảnh trong tab1 và tab2 tải hoàn tất
   const waitForImagesToLoad = (element: HTMLElement): Promise<void> => {
     const images = element.querySelectorAll("img");
     if (images.length === 0) return Promise.resolve();

@@ -158,7 +158,6 @@ export default function Step4Form() {
               width={450}
               height={450}
               objectFit="contain"
-              loading="lazy"
             />
           </div>
         </div>
