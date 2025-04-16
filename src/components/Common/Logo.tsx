@@ -8,7 +8,6 @@ export default function Logo() {
         alt="Money with Mina Logo"
         width={70}
         height={70}
-        crossOrigin="anonymous"
         unoptimized={true}
       />
     </div>
