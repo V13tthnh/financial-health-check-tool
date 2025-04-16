@@ -87,8 +87,8 @@ export default function Tab1Content({ formData }: Tab1ContentProps) {
       {/* Cột trái */}
       <div>
         <div className="financial-goals-feedback mb-6 rounded-md">
-          <div className="flex items-center mb-4">
-            <div className="w-3/10 flex items-center justify-center h-full">
+          <div className="flex flex-col md:flex-row items-center mb-4">
+            <div className="w-full md:w-3/10 flex items-center justify-center h-full mb-4 md:mb-0">
               <Image
                 src="/images/icon-growth.png"
                 alt="Economic Growth"
@@ -98,7 +98,7 @@ export default function Tab1Content({ formData }: Tab1ContentProps) {
                 unoptimized={true}
               />
             </div>
-            <div className="w-7/10 mt-10 pr-3 pl-3 mb-2">
+            <div className="w-full md:w-7/10 mt-0 md:mt-10 pr-3 pl-3 mb-2 text-center md:text-left">
               <h3 className="font-semibold text-xl mb-2">
                 Hiện tại mục tiêu tài chính của bạn là:
               </h3>
